@@ -12,4 +12,6 @@ Pada prosesnya:
 2. untuk masing-masing row maka dapatkan id dan konten serta jadwal paket
 3. simpan ke file bernama \<id>.htm dengan isinya adalah \<konten> + \<jadwal>
 
+Ini masih versi sangat awal.
+
 Pekerjaan ini merupakan salah satu bukti pekerjaan Work From Home PNS Pemprov Kalteng :D
