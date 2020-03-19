@@ -10,6 +10,9 @@
  * 2. untuk masing-masing row maka dapatkan id dan konten serta jadwal paket
  * 3. simpan ke file bernama <id>.htm dengan isinya adalah <konten> + <jadwal>
  * 
+ * Jalankan dengan perintah dari shell:
+ * $ phantomjs lpsescrapper.js
+ * 
  * @author Yan F (friskantoni@gmail.com)
  */
 // url dituju
@@ -18,7 +21,8 @@ var url = 'https://lpse.kalteng.go.id/eproc4/lelang'
 var fs = require('fs')
 // jumlah halaman dibaca
 var pagecnt = 0
-// maksimal halaman
+// maksimal halaman,masukkan nilai 0 untuk mengabaikan halaman, pada skenario ini sistem melakukan pembacaan
+// hingga tombol next pada pembagian halaman data tidak dapat di klik.
 var maxpagecnt = 243
 
 /**
@@ -72,17 +76,20 @@ function scrapePage()
         },
         function() {
             stopLoop = false // apa looping diteruskan?
-            if (pagecnt <= maxpagecnt) {
+            if(maxpagecnt > 0) { // diputuskan utk membatasi halaman?
+                if(pagecnt > maxpagecnt) { // halaman saat ini > max?
+                    stopLoop = true
+                }
+            }
+            if (!stopLoop) {
                 console.log("Scrapping page: " + pagecnt)
                 processingThePage(page, pagecnt)
-                if (isNextExist(page)) {
-                    clickNext(page)
-                    scrapePage()
+                if (isNextExist(page)) { // ada kelihatan tombol halaman utk next?
+                    clickNext(page) // click next nya!
+                    scrapePage() // recursive function
                 } else {
                     stopLoop = true
                 }
-            } else {
-                stopLoop = true
             }
             if( stopLoop ) {
                 phantom.exit()
