@@ -23,43 +23,11 @@ var fs = require('fs')
 var pagecnt = 0
 // maksimal halaman,masukkan nilai 0 untuk mengabaikan halaman, pada skenario ini sistem melakukan pembacaan
 // hingga tombol next pada pembagian halaman data tidak dapat di klik.
-var maxpagecnt = 243
-
-/**
- * https://github.com/ariya/phantomjs/blob/master/examples/waitfor.js
- * Wait until the test condition is true or a timeout occurs. Useful for waiting
- * on a server response or for a ui change (fadeIn, etc.) to occur.
- *
- * @param testFx javascript condition that evaluates to a boolean,
- * it can be passed in as a string (e.g.: "1 == 1" or "$('#bar').is(':visible')" or
- * as a callback function.
- * @param onReady what to do when testFx condition is fulfilled,
- * it can be passed in as a string (e.g.: "1 == 1" or "$('#bar').is(':visible')" or
- * as a callback function.
- * @param timeOutMillis the max amount of time to wait. If not specified, 3 sec is used.
- */
-function waitFor(testFx, onReady, timeOutMillis) {
-    var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 3000, //< Default Max Timout is 3s
-        start = new Date().getTime(),
-        condition = false,
-        interval = setInterval(function () {
-            if ((new Date().getTime() - start < maxtimeOutMillis) && !condition) {
-                // If not time-out yet and condition not yet fulfilled
-                condition = (typeof (testFx) === "string" ? eval(testFx) : testFx()); //< defensive code
-            } else {
-                if (!condition) {
-                    // If condition still not fulfilled (timeout but condition is 'false')
-                    console.log("'waitFor()' timeout");
-                    phantom.exit(1);
-                } else {
-                    // Condition fulfilled (timeout and/or condition is 'true')
-                    // console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
-                    typeof (onReady) === "string" ? eval(onReady) : onReady(); //< Do what it's supposed to do once the condition is fulfilled
-                    clearInterval(interval); //< Stop this interval
-                }
-            }
-        }, 250); //< repeat check every 250ms
-};
+var maxpagecnt = 1
+// waitfor module
+var waiter = require('./waitfor')
+// md5
+var theHash = require('./md5')
 
 /**
  * lakukan pengambilan isi datanya.
@@ -67,7 +35,7 @@ function waitFor(testFx, onReady, timeOutMillis) {
 function scrapePage()
 {
     pagecnt = pagecnt + 1
-    waitFor(
+    waiter.waitFor(
         function() {
             // mulai proses pembacaan dan melakukan evaluasi saat halaman sudah terload
             return page.evaluate(function () {
@@ -133,9 +101,18 @@ function processingThePage(page, currentPage)
         // looping pada masing-masing baris di table lelang
         $('table#tbllelang tr').each(function(index, el) {
             var id = $(el).find("td:first").text(), // ambil id
-                content = $(el).find('td:nth-child(2)').html(), // isinya
+                contentObj = $(el).find('td:nth-child(2)'), // ambil content object
+                linkPengumuman = $(contentObj).find('p:first a').attr('href'), // dapatkan link pengumuman
+                content = contentObj.html(), // isinya dalam html
                 schedule = $(el).find('td:nth-child(4)').html() // dan jadwal aktif
-            data[id] = content + '<p>' + schedule + '</p>' // simpan
+
+            if (content !== undefined) {
+                data[id] = {
+                    'linkPengumuman': linkPengumuman,
+                    'content': content + '<p>' + schedule + '</p>',
+                    'jadwal': schedule
+                }
+            }
         })
         // di phantomjs terdapat masalah bila kembalian adalah langsung array
         // maka convert ke string dengan format JSON
@@ -143,11 +120,25 @@ function processingThePage(page, currentPage)
     })
     // ambil datanya
     var result = JSON.parse(tableContent)
+
     // looping berdasarkan data tersebut
     for(var key in result) {
-        content = result[key]
+        content = result[key]['content']
+
+        var md5nya = theHash.md5(content),
+            // fileKeyName = key + '.log',
+            fileName = key + '_' + md5nya + '.json',
+            currDate = new Date()
+
+        if( fs.exists(fileName) ) {
+            console.log("File: " + fileName + " tidak ada perubahan.")
+            continue
+        } else {
+            console.log("New/Update file: " + fileName)
+        }
+
         // setiap file memiliki nama id paket dan htm
-        fs.write( key + '.htm', content, 'w')
+        fs.write( fileName, JSON.stringify(result[key]), 'w')
     }
 }
 
