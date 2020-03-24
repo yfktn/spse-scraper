@@ -23,11 +23,15 @@ var fs = require('fs')
 var pagecnt = 0
 // maksimal halaman,masukkan nilai 0 untuk mengabaikan halaman, pada skenario ini sistem melakukan pembacaan
 // hingga tombol next pada pembagian halaman data tidak dapat di klik.
-var maxpagecnt = 1
+var maxpagecnt = 240
 // waitfor module
 var waiter = require('./waitfor')
 // md5
 var theHash = require('./md5')
+// TAFFY DB
+var TAFFYDB = require('./taffy').taffy,
+    dbScrapper = TAFFYDB([]), // object db with TAFFYDB
+    dbPath = 'spse-scrapper.db' // place of our db
 
 /**
  * lakukan pengambilan isi datanya.
@@ -60,6 +64,7 @@ function scrapePage()
                 }
             }
             if( stopLoop ) {
+                storeOurDb()
                 phantom.exit()
             }
         }
@@ -97,7 +102,7 @@ function clickNext(page)
 function processingThePage(page, currentPage)
 {
     var tableContent = page.evaluate(function() {
-        var data = {}
+        var data = []
         // looping pada masing-masing baris di table lelang
         $('table#tbllelang tr').each(function(index, el) {
             var id = $(el).find("td:first").text(), // ambil id
@@ -107,11 +112,12 @@ function processingThePage(page, currentPage)
                 schedule = $(el).find('td:nth-child(4)').html() // dan jadwal aktif
 
             if (content !== undefined) {
-                data[id] = {
+                data.push({
+                    'idTender': id,
                     'linkPengumuman': linkPengumuman,
                     'content': content + '<p>' + schedule + '</p>',
                     'jadwal': schedule
-                }
+                })
             }
         })
         // di phantomjs terdapat masalah bila kembalian adalah langsung array
@@ -119,27 +125,40 @@ function processingThePage(page, currentPage)
         return JSON.stringify(data);
     })
     // ambil datanya
-    var result = JSON.parse(tableContent)
+    var result = JSON.parse(tableContent),
+        resultLength = result.length
 
     // looping berdasarkan data tersebut
-    for(var key in result) {
-        content = result[key]['content']
+    for(var i = 0; i < resultLength; i++) {
+        content = result[i]['content']
 
         var md5nya = theHash.md5(content),
-            // fileKeyName = key + '.log',
-            fileName = key + '_' + md5nya + '.json',
-            currDate = new Date()
+            idDicari = result[i]['idTender'] + '_' + md5nya,
+            currDate = Date.now() // get timestamps, so it easier to sort!
 
-        if( fs.exists(fileName) ) {
-            console.log("File: " + fileName + " tidak ada perubahan.")
+        if( dbScrapper( { id: { is: idDicari } } ).count() > 0 ) {
+            console.log("Database: " + idDicari + " tidak ada perubahan.")
             continue
         } else {
-            console.log("New/Update file: " + fileName)
+            console.log("New/Update file: " + idDicari)
+            result[i]['id'] = idDicari
+            result[i]['waktu_check'] = currDate
+            dbScrapper.insert(result[i])
         }
-
-        // setiap file memiliki nama id paket dan htm
-        fs.write( fileName, JSON.stringify(result[key]), 'w')
     }
+}
+
+function initOurDb()
+{
+    var content = fs.read(dbPath)
+    dbScrapper = TAFFYDB(JSON.parse(content))
+    console.log("DB init ...")
+}
+
+function storeOurDb()
+{
+    fs.write(dbPath, dbScrapper().stringify(), "w")
+    console.log("DB stored")
 }
 
 // mulai untuk membuat objek webpage punya phantomjs
@@ -149,6 +168,7 @@ var page = require('webpage').create()
 page.open(url, function(status) {
     if (status == 'success') {
         // lakukan recursive
+        initOurDb()
         scrapePage()
     } else {
         console.log("Tidak dapat mengakses url yang dikehendaki")
