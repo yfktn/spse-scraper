@@ -6,7 +6,7 @@ perangkat kusus karena tidak bisa langsung menggunakan fungsi di php.
 
 Terhadap versi SPSE yang di test saat ini dikembangkan adalah SPSE v4.3u20191009.
 
-Setelah aplikasi ini dijalankan, pada folder tempat shell aktif aplikasi dijalankan; terdapat deretan file dibuat dengan pola nama file adalah: <id-paket>.htm. File ini kemudian akan diproses berikutnya oleh tool lainnya. 
+Setelah aplikasi ini dijalankan, pada folder tempat shell aktif aplikasi dijalankan; terdapat deretan file dibuat dengan pola nama file adalah: \<id-paket>.htm. File ini kemudian akan diproses berikutnya oleh tool lainnya. 
 
 Ide sederhana untuk alur program ini adalah:
 1. dapatkan konten dari table#dttable
