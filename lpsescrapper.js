@@ -207,8 +207,10 @@ function storeOurDb()
     console.log("Diselesaikan dalam waktu: " + (performaEnd - performaStart) + " ms")
     console.log("Items dimasukkan: " + jsonutil.getLength())
     jsonutil.saveData()
-    // fs.write(dbPath, dbScrapper().stringify(), "w")
     console.log("DB stored")
+    if(diRunLagi) {
+        console.log("Nampaknya terdapat beberapa bagian belum tuntas, silahkan lakukan eksekusi lagi!")
+    }
 }
 
 // mulai untuk membuat objek webpage punya phantomjs
