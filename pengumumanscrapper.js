@@ -5,7 +5,7 @@
 var waiter = require('./waitfor')
 var pagePengumuman = require('webpage').create()
 
-exports.aksesHalamanPengumumannya = function (filenya, linknya)
+exports.aksesHalamanPengumumannya = function (linknya)
 {
     pagePengumuman.open(linknya, function(status) {
         if(status == 'success') {

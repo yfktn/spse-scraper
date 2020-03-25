@@ -4,11 +4,9 @@
  * merupakan hasil render oleh javascript, sehingga dibutuhkan pembacaan dari hasil generatenya menggunakan
  * perangkat kusus, tidak bisa langsung menggunakan fungsi di php. 
  * Terhadap versi SPSE yang di test adalah SPSE v4.3u20191009.
- * Hasil dari berjalannya aplikasi ini adalah dibuatnya deretan file menggunakan nama <id-paket>.htm, yang
- * kemudian akan diproses berikutnya oleh tool lainnya. Pada prosesnya:
- * 1. dapatkan konten dari table#dttable
- * 2. untuk masing-masing row maka dapatkan id dan konten serta jadwal paket
- * 3. simpan ke file bernama <id>.htm dengan isinya adalah <konten> + <jadwal>
+ * 
+ * Hasil dari proses ini adalah adanya file database sebagaimana yang di set pada bagian dbPath, berupa JSON
+ * file untuk dibaca kembali oleh tool pembacaan isi pengumuman.
  * 
  * Jalankan dengan perintah dari shell:
  * $ phantomjs lpsescrapper.js
@@ -107,16 +105,27 @@ function processingThePage(page, currentPage)
         $('table#tbllelang tr').each(function(index, el) {
             var id = $(el).find("td:first").text(), // ambil id
                 contentObj = $(el).find('td:nth-child(2)'), // ambil content object
-                linkPengumuman = $(contentObj).find('p:first a').attr('href'), // dapatkan link pengumuman
+                link = $(contentObj).find('p:first a'),
+                linkPengumuman = $(link).attr('href'), // dapatkan link pengumuman
+                namaPaket = $(link).html(),
+                versiSpse = $(link).next().text(),
                 content = contentObj.html(), // isinya dalam html
-                schedule = $(el).find('td:nth-child(4)').html() // dan jadwal aktif
+                schedule = $(el).find('td:nth-child(4)').html(), // dan jadwal aktif
+                tentangTender = $(contentObj).find('p:nth-child(2)').text(), // tentang tender
+                tentangTenderA = tentangTender.split("-")
 
             if (content !== undefined) {
                 data.push({
                     'idTender': id,
+                    'namaPaket': namaPaket,
+                    'versiSpse': versiSpse,
                     'linkPengumuman': linkPengumuman,
                     'content': content + '<p>' + schedule + '</p>',
-                    'jadwal': schedule
+                    'jadwal': schedule,
+                    'jenis': tentangTenderA[0].trim(),
+                    'tahun_anggaran': tentangTenderA[1].trim(),
+                    'metode': tentangTenderA[2].trim(),
+                    'pelaksanaan': tentangTenderA[3].trim(),
                 })
             }
         })
@@ -137,10 +146,10 @@ function processingThePage(page, currentPage)
             currDate = Date.now() // get timestamps, so it easier to sort!
 
         if( dbScrapper( { id: { is: idDicari } } ).count() > 0 ) {
-            console.log("Database: " + idDicari + " tidak ada perubahan.")
+            // console.log("Database: " + idDicari + " tidak ada perubahan.")
             continue
         } else {
-            console.log("New/Update file: " + idDicari)
+            // console.log("New/Update file: " + idDicari)
             result[i]['id'] = idDicari
             result[i]['waktu_check'] = currDate
             dbScrapper.insert(result[i])
