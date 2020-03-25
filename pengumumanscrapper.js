@@ -1,11 +1,17 @@
 /**
- * Lakukan pembacaan di halaman punya pengumuman
+ * Lakukan pembacaan di halaman punya pengumuman, jalankan ini setelah proses pembacaan data awal selesai
+ * dilakukan.
  */
 // waitfor module
 var waiter = require('./waitfor')
 var pagePengumuman = require('webpage').create()
+// untuk membaca file
+var fs = require('fs')
+// TAFFY DB
+var dbUtama = require('./dbnya'),
+    dbUtamaPath = 'spse-scrapper.db'
 
-exports.aksesHalamanPengumumannya = function (linknya)
+function aksesHalamanPengumumannya(linknya)
 {
     pagePengumuman.open(linknya, function(status) {
         if(status == 'success') {
@@ -41,8 +47,8 @@ function prosesPengumumanTender()
         var data = {}
             tableTr = $('div.content:first table tr')
 
-        data['kode_tender'] = $(tableTr[0]).find('td:first').text()
-        data['nama_tender'] = $(tableTr[1]).find('td:first').html()
+        // data['kode_tender'] = $(tableTr[0]).find('td:first').text()
+        // data['nama_tender'] = $(tableTr[1]).find('td:first').html()
         // nilai RUP dll
         var dtu = $(tableTr[4]).find('td'),
             pagu = $(tableTr[13]).find('td:first').text(),
@@ -57,16 +63,26 @@ function prosesPengumumanTender()
         data['satuan_kerja'] = $(tableTr[9]).find('td:first').text()
         data['kategori'] = $(tableTr[10]).find('td:first').text()
         data['sistem_pengadaan'] = $(tableTr[11]).find('td:first').text()
-        data['tahun_anggaran'] = $(tableTr[12]).find('td:first').text()
+        // data['tahun_anggaran'] = $(tableTr[12]).find('td:first').text()
         data['pagu_paket'] = pagu.replace('Rp ', '')
         data['hps_paket'] = hps.replace('Rp ', '')
         data['cara_pembayaran'] = $(tableTr[14]).find('td:first').text()
         data['lokasi'] = $(tableTr[15]).find('td:first').html()
         data['kualifikasi'] = $(tableTr[16]).find('td:first').text()
-        data['kualifikasi'] = $(tableTr[35]).find('td:first').text()
+        data['peserta'] = $(tableTr[35]).find('td:first').text()
 
         return JSON.stringify(data)
     })
 
     return dataTender
 }
+
+
+function loopingUtama()
+{
+    // buka dan load db
+    dbUtama.initDanLoad(dbUtamaPath)
+    // looping di db utama nya
+
+}
+
