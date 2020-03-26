@@ -8,38 +8,49 @@ var pagePengumuman = require('webpage').create()
 // untuk membaca file
 var fs = require('fs')
 // TAFFY DB
-var dbUtama = require('./dbnya'),
-    dbUtamaPath = 'spse-scrapper.db'
+var jsonutil = require('./jsonutil'),
+    jsonDbPath = 'spse-scraper.db',
+    performaStart = performance.now(),
+    spseUrl = 'https://lpse.kalteng.go.id'
 
-function aksesHalamanPengumumannya(linknya)
+function aksesHalamanPengumumanTenderTerdata()
 {
+    dataCurrent = jsonutil.getCurrentData()
+    linknya = spseUrl + dataCurrent.linkPengumuman // dapatkan link untuk dibuka
     pagePengumuman.open(linknya, function(status) {
-        if(status == 'success') {
-            scrapePengumuman(linknya)
+        if (status == 'success') {
+            waiter.waitFor(
+                function () {
+                    // tunggu sampai sesuatu ke load
+                    return pagePengumuman.evaluate(function () {
+                        return $('div.content').length > 0
+                    })
+                },
+                function () {
+                    if(dataCurrent.visited != 1) {
+                        console.log("Mengakses : " + linknya)
+                        var dataPengumuman = prosesPengumumanTender()
+                        jsonutil.mergeObject(dataCurrent, dataPengumuman)
+                        dataCurrent.visited = 1 // set nilai visited jangan lupa!
+                    } else {
+                        console.log("Akses ke tender: " + dataCurrent.idTender + "  sudah dilakukan")
+                    }
+                    if(jsonutil.moveNext()) { // maju ke data berikutnya
+                        aksesHalamanPengumumanTenderTerdata() // recursive
+                    } else {
+                        selesai()
+                    }
+                }
+            )
         } else {
             console.log("Halaman pengumuman tidak dapat dicek: " + linknya)
         }
     })
 }
 
-function scrapePengumuman(linknya)
-{
-    waiter.waitFor(
-        function() {
-            // tunggu sampai sesuatu ke load
-            return page.evaluate(function() {
-                return $('div.content').length > 0
-            })
-        },
-        function() {
-            prosesPengumumanTender()
-        }
-    )
-}
-
 /**
  * Lakukan pembacaan terhadap pengumuman Tender
- * @returns {String} hasil JSON.stringify( dataPengumuman )
+ * @returns {Array} hasil
  */
 function prosesPengumumanTender()
 {
@@ -74,15 +85,30 @@ function prosesPengumumanTender()
         return JSON.stringify(data)
     })
 
-    return dataTender
+    return JSON.parse(dataTender)
 }
 
-
-function loopingUtama()
+function selesai()
 {
-    // buka dan load db
-    dbUtama.initDanLoad(dbUtamaPath)
-    // looping di db utama nya
+    // klo sudah tidak ada lagi sudah sampai sini
+    jsonutil.saveData() // simpan datanya
 
+    var performaEnd = performance.now()
+    console.log("Diselesaikan dalam waktu: " + (performaEnd - performaStart) + " ms")
+    
+    phantom.exit() // keluar!
 }
+
+function main()
+{
+    jsonutil.setPath(jsonDbPath)
+    // buka dan load db
+    jsonutil.initAndLoad()
+    // move to the first data
+    jsonutil.moveFirst()
+    aksesHalamanPengumumanTenderTerdata()
+}
+
+// laksanakan!
+main()
 
