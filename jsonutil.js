@@ -1,3 +1,6 @@
+/**
+ * Ini digunakan untuk inputan saja, sedangkan terhadap query yang lebih advanced gunakan tool taffydb
+ */
 var fs = require('fs'),
     dbData = [],
     dbIndexId = [],
@@ -76,7 +79,7 @@ exports.isAlreadyInserted = function(idValue)
     return dbIndexId.indexOf(idValue) >= 0
 }
 
-exports.findValueInField(value, inField)
+exports.findValueInField = function(value, inField)
 {
     if( inField === 'id' ) {
         return dbIndexId.indexOf(value)
