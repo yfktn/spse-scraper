@@ -74,9 +74,12 @@ function prosesDataEvaluasi()
                 dexTerkoreksi = $(tableTr).find('th:contains("Penawaran Terkoreksi")').index(),
                 dexNegosiasi = $(tableTr).find('th:contains("Hasil Negosiasi")').index(),
                 dexStatusPK = $(tableTr).find('th:contains("PK")').index(),
-                barisPemenang = pemenangTd.parent().parent() // dapatkan baris / tr nya punya data si pemenang
+                barisPemenang = pemenangTd.parent().parent(), // dapatkan baris / tr nya punya data si pemenang
+                pemenang = $(barisPemenang).find('td:eq(1)').text().split(" - ")
             // dapatkan index yang menyimpan data baris (row) info pemenang
             data['ada_pemenang'] = 1
+            data['pemenang'] = pemenang[0].trim()
+            data['npwp'] = pemenang[1].trim()
             data['penawaran'] = $(barisPemenang).find('td:eq(' + dexPenawaran + ')').text().replace('Rp ', '')
             data['terkoreksi'] = $(barisPemenang).find('td:eq(' + dexTerkoreksi + ')').text().replace('Rp ', '')
             data['negosiasi'] = $(barisPemenang).find('td:eq(' + dexNegosiasi + ')').text().replace('Rp ', '')
@@ -84,8 +87,9 @@ function prosesDataEvaluasi()
             // kalau sudah berkontrak ada di barisnya dengan tanda gambar bintang star.gif
             data['sudah_berkontrak'] = $(barisPemenang).find('td:eq(' + dexStatusPK + ') > img[src$="star.gif"]').length
         } else {
-
             data['ada_pemenang'] = 0
+            data['pemenang'] = ""
+            data['npwp'] = ""
             data['penawaran'] = 0
             data['terkoreksi'] = 0
             data['negosiasi'] = 0
