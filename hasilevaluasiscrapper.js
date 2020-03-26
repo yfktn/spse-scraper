@@ -13,9 +13,9 @@ function aksesHalamanEvaluasiTerdata()
     dataCurrent = jsonutil.getCurrentData()
     if(dataCurrent.visited == 1) {
         var bacaDanEvaluasi = true // apakah di baca dan evaluasi halaman ini?
-        if(dataCurrent.adaPemenang === undefined) {
+        if(dataCurrent.ada_pemenang === undefined) {
             bacaDanEvaluasi = true  // belum dilakukan pembacaan sebelumnya
-        } else if(dataCurrent.adaPemenang == 1) {
+        } else if(dataCurrent.ada_pemenang == 1) {
             bacaDanEvaluasi = false // sudah dibaca dan sudah ada pemenangnya, tidak perlu dibaca lagi
         } else {
             bacaDanEvaluasi = true // lakukan pembacaan karena belum ada pemenang
@@ -42,21 +42,30 @@ function aksesHalamanEvaluasiTerdata()
                             console.log("Mengakses : " + linkToTest)
                             var dataEvaluasi = prosesDataEvaluasi()
                             jsonutil.mergeObject(dataCurrent, dataEvaluasi)
-                            if(jsonutil.moveNext()) {
-                                // recursive
-                                aksesHalamanEvaluasiTerdata()
-                            } else {
-                                selesai()
-                            }
+                            lanjutkanKeDataBerikutnya()
                         }
                     )
                 } else {
                     console.log("Tidak dapat mengakses " + linkToTest + " status: " + statusHttp)
                 }
             })
+        } else {
+            console.log("Ada pemenang!")
+            lanjutkanKeDataBerikutnya()
         }
     } else {
         console.log("Data idtender: " + dataCurrent.idTender + " belum update! Jalankan kembali pengumuman-scrapper!")
+        phantom.exit()
+    }
+}
+
+function lanjutkanKeDataBerikutnya()
+{
+    if (jsonutil.moveNext()) {
+        // recursive
+        aksesHalamanEvaluasiTerdata()
+    } else {
+        selesai()
     }
 }
 
@@ -82,7 +91,7 @@ function prosesDataEvaluasi()
             data['npwp'] = pemenang[1].trim()
             data['penawaran'] = $(barisPemenang).find('td:eq(' + dexPenawaran + ')').text().replace('Rp ', '')
             data['terkoreksi'] = $(barisPemenang).find('td:eq(' + dexTerkoreksi + ')').text().replace('Rp ', '')
-            data['negosiasi'] = $(barisPemenang).find('td:eq(' + dexNegosiasi + ')').text().replace('Rp ', '')
+            data['negosiasi'] =(dexNegosiasi >= 0 ? $(barisPemenang).find('td:eq(' + dexNegosiasi + ')').text().replace('Rp ', ''): 0)
             // apakah sudah di buat di pemenang berkontrak?
             // kalau sudah berkontrak ada di barisnya dengan tanda gambar bintang star.gif
             data['sudah_berkontrak'] = $(barisPemenang).find('td:eq(' + dexStatusPK + ') > img[src$="star.gif"]').length
