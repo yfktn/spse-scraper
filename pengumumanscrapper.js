@@ -63,7 +63,7 @@ function aksesHalamanPengumumanTenderTerdata()
 function prosesPengumumanTender()
 {
     var dataTender = pagePengumuman.evaluate(function() {
-        var data = {}
+        var data = {},
             tableTr = $('div.content:first table tr')
 
         // data['kode_tender'] = $(tableTr[0]).find('td:first').text()
