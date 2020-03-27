@@ -6,37 +6,74 @@ jsonutil.setPath('testdata.db')
 if(!fs.exists('testdata.db')) {
     console.log("Init data ...")
     for (var i = 1; i <= 999999; i++) {
-        jsonutil.push({ id: "id" + i, content: 'INI CONTENT ' + i })
+        jsonutil.push({ id: "id" + i, content: 'INI CONTENT ' + i, otherId: "oid" + i, tanpaIndex: "noid" + i })
     }
     jsonutil.saveData()
 } else {
     jsonutil.initAndLoad()
 }
 
+jsonutil.addIndex('otherId')
+
 // jsonutil.initAndLoad()
 
+var starting = performance.now()
 if( jsonutil.isAlreadyInserted("id" + 3) ) {
     console.log("OKE Sudah ditambahkan oke ...")
 } else {
     console.log("Test tidak benar!")
 }
-
+console.log("Habis waktu dengan index: " + (performance.now() - starting) + " ms")
+starting = performance.now()
 if (jsonutil.isAlreadyInserted("id999999")) {
     console.log("OKE Sudah ditambahkan oke ...")
 } else {
     console.log("Test tidak benar!")
 }
-
+console.log("Habis waktu dengan index: " + (performance.now() - starting) + " ms")
+starting = performance.now()
 if (jsonutil.indexOfId("id999999") == 999998) {
     console.log("OKE Data pencarian sudah oke ...")
 } else {
     console.log("Test tidak benar!")
 }
-
+console.log("Habis waktu dengan index: " + (performance.now() - starting) + " ms")
+starting = performance.now()
+if (jsonutil.findValueInField("oid999999", 'otherId') == 999998) {
+    console.log("OKE Data pencarian sudah oke ...")
+} else {
+    console.log("Test tidak benar!")
+}
+console.log("Habis waktu dengan index: " + (performance.now() - starting) + " ms")
+starting = performance.now()
+if (jsonutil.findValueInField("noid999999", 'tanpaIndex') == 999998) {
+    console.log("OKE Data pencarian sudah oke ...")
+} else {
+    console.log("Test tidak benar!")
+}
+console.log("Habis waktu tanpa index: " + (performance.now() - starting) + " ms")
+starting = performance.now()
 if (jsonutil.isAlreadyInserted("id-1") == false) {
     console.log("OKE Semestinya tidak ada ...")
 } else {
     console.log("Test tidak benar!")
+}
+// cari data untuk dihapus
+jsonutil.moveLast()
+var nilaiDihapus = jsonutil.getCurrentData().otherId
+// test hapus data
+var hapusdatadi = jsonutil.findValueInField(nilaiDihapus, 'otherId')
+console.log("Jumlah data sebelum dihapus:" + jsonutil.getLength() + ' data dihapus: ' + nilaiDihapus)
+if(jsonutil.deleteDataAtIndex(hapusdatadi)) {
+    console.log("Oke sudah terhapus!")
+} else {
+    console.log("TIDAK Benar tidak dapat terhapus")
+}
+console.log("Jumlah data sekarang setelah dihapus:" + jsonutil.getLength())
+if (jsonutil.findValueInField(nilaiDihapus, 'otherId') === false) {
+    console.log("Oke sudah terhapus!")
+} else {
+    console.log("TIDAK Benar data yang sebelumnya dihapus masih ditemukan, tidak dapat terhapus")
 }
 
 jsonutil.moveLast()
