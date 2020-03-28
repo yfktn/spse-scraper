@@ -1,12 +1,13 @@
 /**
  * Lakukan pembacaan terhadap hasil evaluasi
  */
-var waiter = require('./waitfor'),
+var config = require('./config'),
+    waiter = require('./waitfor'),
     pageEvaluasi = require('webpage').create(),
     jsonutil = require('./jsonutil'),
-    jsonDbPath = 'spse-scraper.db',
+    jsonDbPath = config.scraper.dbPath,
     performaStart = performance.now(),
-    spseUrl = 'https://lpse.kalteng.go.id/eproc4/evaluasi/'
+    spseUrl = config.scraper.urlEvaluasi
 
 function aksesHalamanEvaluasiTerdata()
 {

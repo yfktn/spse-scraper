@@ -26,6 +26,30 @@ Dapat data dasarnya kemudian:
 2. Cari tahu siapa pemenangnya dan NPWP
 3. Lakukan penyimpanan supaya nanti bisa ditelusuri ulang untuk optimasi
 
+## Cara penggunaan
+Untuk bisa menggunakan aplikasi scraper ini adalah:
+1. Pastikan bahwa **aplikasi phantomjs** telah terinstal, untuk ini silahkan [Download Binary Phantom.js](https://phantomjs.org/download.html). Sesuaikan dengan OS yang digunakan, serta pastikan sudah bisa dieksekusi dari command shell.
+2. Lakukan copy terhadap file config_example.js menjadi file config.js dan lakukan penyesuaian.
+3. Jalankan script lpse_scraper.js melalui command shell:
+```
+$ phantomjs lpse_scraper.js
+```
+4. Jalankan script pengumuman_scraper.js melalui command shell:
+```
+$ phantomjs pengumuman_scraper.js
+```
+5. Jalankan script hasil_evaluasi_scraper.js.
+```
+$ phantomjs hasil_evaluasi_scraper.js
+```
+6. Dari hasil langkah yang tidak boleh ditukar ini, maka akan dihasilkan file data tender pada website SPSE terpilih.
+
+## Versi SPSE
+Versi SPSE yang dikenali adalah SPSE versi 4.3.
+
+## Perhatian
+Karena proses pembacaan membuat trafik yang sangat tinggi pada website, diharapkan agar penggunaan tool ini dilakukan dengan sepengetahuan System Admin LPSE.
+
 Ini masih versi sangat awal.
 
 *Pekerjaan ini merupakan salah satu bukti pekerjaan Work From Home PNS Pemprov Kalteng :D*
