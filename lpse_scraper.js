@@ -14,19 +14,19 @@
  * @author Yan F (friskantoni@gmail.com)
  */
 // url dituju
-var url = 'https://lpse.kalteng.go.id/eproc4/lelang'
-// jumlah halaman dibaca
-var pagecnt = 0
-// maksimal halaman,masukkan nilai 0 untuk mengabaikan halaman, pada skenario ini sistem melakukan pembacaan
-// hingga tombol next pada pembagian halaman data tidak dapat di klik.
-var maxpagecnt = 0
-// waitfor module
-var waiter = require('./waitfor')
-// md5
-var theHash = require('./md5')
-
-var jsonutil = require('./jsonutil'),
-    jsondbPath = 'spse-scraper.db',
+var config = require('./config'),
+    url = config.scraper.urlDaftarLelang,
+    // jumlah halaman dibaca
+    pagecnt = 0,
+    // maksimal halaman,masukkan nilai 0 untuk mengabaikan halaman, pada skenario ini sistem melakukan pembacaan
+    // hingga tombol next pada pembagian halaman data tidak dapat di klik.
+    maxpagecnt = config.scraper.maxPageCnt,
+    // waitfor module
+    waiter = require('./waitfor'),
+    // md5
+    theHash = require('./md5'),
+    jsonutil = require('./jsonutil'),
+    jsondbPath = config.scraper.dbPath,
     performaStart = performance.now(),
     // terdapat bug, sehingga pada beberapa kesempatan pembacaan data di halaman, data yang terbaca tidak
     // tersimpan semua. Namun ini bisa dilakukan ulang dengan cara melakukan pembacaan ulang. Hal ini 

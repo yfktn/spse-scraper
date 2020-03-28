@@ -3,15 +3,13 @@
  * dilakukan.
  */
 // waitfor module
-var waiter = require('./waitfor')
-var pagePengumuman = require('webpage').create()
-// untuk membaca file
-var fs = require('fs')
-// TAFFY DB
-var jsonutil = require('./jsonutil'),
-    jsonDbPath = 'spse-scraper.db',
+var config = require('./config'),
+    waiter = require('./waitfor'),
+    pagePengumuman = require('webpage').create(),
+    jsonutil = require('./jsonutil'),
+    jsonDbPath = config.scraper.dbPath,
     performaStart = performance.now(),
-    spseUrl = 'https://lpse.kalteng.go.id'
+    spseUrl = config.scraper.url
 
 function aksesHalamanPengumumanTenderTerdata()
 {
