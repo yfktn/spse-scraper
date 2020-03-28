@@ -58,9 +58,14 @@ function loadCreateFile()
  */
 exports.addIndex = function(fieldName) 
 {
-    dbIndex[fieldName] = dbData.map(function(el) {
-        return el[fieldName]
-    })
+    if(dbData[fieldName] === undefined) {
+        // ini ditambahkan dahulu sebelum data ada, maka bikin ancang-ancang saja
+        dbIndex[fieldName] = [] // init saja dahulu
+    } else {
+        dbIndex[fieldName] = dbData.map(function(el) {
+            return el[fieldName]
+        })
+    }
 }
 
 /**
