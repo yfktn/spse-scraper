@@ -4,7 +4,7 @@
 var waiter = require('./waitfor'),
     pageEvaluasi = require('webpage').create(),
     jsonutil = require('./jsonutil'),
-    jsonDbPath = 'db-visited-reset.db',
+    jsonDbPath = 'spse-scraper.db',
     performaStart = performance.now(),
     spseUrl = 'https://lpse.kalteng.go.id/eproc4/evaluasi/'
 
@@ -50,7 +50,7 @@ function aksesHalamanEvaluasiTerdata()
                 }
             })
         } else {
-            console.log("Ada pemenang!")
+            // console.log("Ada pemenang!")
             lanjutkanKeDataBerikutnya()
         }
     } else {
@@ -131,6 +131,7 @@ function main()
     jsonutil.initAndLoad()
     // move to the first data
     jsonutil.moveFirst()
+    console.log("Mohon menunggu proses hingga selesai ...")
     aksesHalamanEvaluasiTerdata()
 }
 
