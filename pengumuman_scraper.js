@@ -9,7 +9,7 @@ var pagePengumuman = require('webpage').create()
 var fs = require('fs')
 // TAFFY DB
 var jsonutil = require('./jsonutil'),
-    jsonDbPath = 'db-visited-reset.db',
+    jsonDbPath = 'spse-scraper.db',
     performaStart = performance.now(),
     spseUrl = 'https://lpse.kalteng.go.id'
 
@@ -73,42 +73,42 @@ function prosesPengumumanTender()
             pagu = $(tableTr[13]).find('td:first').text(),
             hps = $(tableTr[13]).find('td:last').text()
 
-        data['rup_kode'] = $(dtu[0]).text()
-        data['rup_nama_paket'] = $(dtu[1]).text()
-        data['sumber_dana'] = $(dtu[3]).text()
+        data['rup_kode'] = $(dtu[0]).text().trim()
+        data['rup_nama_paket'] = $(dtu[1]).text().trim()
+        data['sumber_dana'] = $(dtu[3]).text().trim()
         if( data['rup_kode'].length > 0 ) {
             // bila ini ada RUP sudah?
-            data['tanggal_pembuatan'] = $(tableTr[5]).find('td:first').text()
-            data['keterangan'] = $(tableTr[6]).find('td:first').text()
-            data['instansi'] = $(tableTr[8]).find('td:first').text()
-            data['satuan_kerja'] = $(tableTr[9]).find('td:first').text()
-            data['kategori'] = $(tableTr[10]).find('td:first').text()
-            data['sistem_pengadaan'] = $(tableTr[11]).find('td:first').text()
-            // data['tahun_anggaran'] = $(tableTr[12]).find('td:first').text()
+            data['tanggal_pembuatan'] = $(tableTr[5]).find('td:first').text().trim()
+            data['keterangan'] = $(tableTr[6]).find('td:first').text().trim()
+            data['instansi'] = $(tableTr[8]).find('td:first').text().trim()
+            data['satuan_kerja'] = $(tableTr[9]).find('td:first').text().trim()
+            data['kategori'] = $(tableTr[10]).find('td:first').text().trim()
+            data['sistem_pengadaan'] = $(tableTr[11]).find('td:first').text().trim()
+            // data['tahun_anggaran'] = $(tableTr[12]).find('td:first').text().trim()
             data['pagu_paket'] = pagu.replace('Rp ', '')
             data['hps_paket'] = hps.replace('Rp ', '')
-            data['cara_pembayaran'] = $(tableTr[14]).find('td:first').text()
+            data['cara_pembayaran'] = $(tableTr[14]).find('td:first').text().trim()
             data['lokasi'] = $(tableTr[15]).find('td:first').html()
-            data['kualifikasi'] = $(tableTr[16]).find('td:first').text()
+            data['kualifikasi'] = $(tableTr[16]).find('td:first').text().trim()
         } else {
 
-            pagu = $(tableTr[11]).find('td:first').text()
-            hps = $(tableTr[11]).find('td:last').text()
+            pagu = $(tableTr[11]).find('td:first').text().trim()
+            hps = $(tableTr[11]).find('td:last').text().trim()
             // ini bila belum ada RUP
-            data['tanggal_pembuatan'] = $(tableTr[3]).find('td:first').text()
-            data['keterangan'] = $(tableTr[4]).find('td:first').text()
-            data['instansi'] = $(tableTr[6]).find('td:first').text()
-            data['satuan_kerja'] = $(tableTr[7]).find('td:first').text()
-            data['kategori'] = $(tableTr[8]).find('td:first').text()
-            data['sistem_pengadaan'] = $(tableTr[9]).find('td:first').text()
-            // data['tahun_anggaran'] = $(tableTr[12]).find('td:first').text()
+            data['tanggal_pembuatan'] = $(tableTr[3]).find('td:first').text().trim()
+            data['keterangan'] = $(tableTr[4]).find('td:first').text().trim()
+            data['instansi'] = $(tableTr[6]).find('td:first').text().trim()
+            data['satuan_kerja'] = $(tableTr[7]).find('td:first').text().trim()
+            data['kategori'] = $(tableTr[8]).find('td:first').text().trim()
+            data['sistem_pengadaan'] = $(tableTr[9]).find('td:first').text().trim()
+            // data['tahun_anggaran'] = $(tableTr[12]).find('td:first').text().trim()
             data['pagu_paket'] = pagu.replace('Rp ', '')
             data['hps_paket'] = hps.replace('Rp ', '')
-            data['cara_pembayaran'] = $(tableTr[12]).find('td:first').text()
+            data['cara_pembayaran'] = $(tableTr[12]).find('td:first').text().trim()
             data['lokasi'] = $(tableTr[13]).find('td:first').html()
-            data['kualifikasi'] = $(tableTr[14]).find('td:first').text()
+            data['kualifikasi'] = $(tableTr[14]).find('td:first').text().trim()
         }
-        data['peserta'] = $('div.content:first table th:last').next().text()
+        data['peserta'] = $('div.content:first table th:last').next().text().trim()
 
         return JSON.stringify(data)
     })
