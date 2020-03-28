@@ -134,7 +134,7 @@ exports.deleteDataAtIndex = function(indexData)
  */
 exports.isAlreadyInserted = function(idValue)
 {
-    return dbIndexId.indexOf(idValue) >= 0
+    return (dbIndexId.indexOf(idValue) !== -1)
 }
 
 /**

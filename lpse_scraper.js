@@ -9,14 +9,12 @@
  * file untuk dibaca kembali oleh tool pembacaan isi pengumuman.
  * 
  * Jalankan dengan perintah dari shell:
- * $ phantomjs lpsescrapper.js
+ * $ phantomjs lpse_scraper.js
  * 
  * @author Yan F (friskantoni@gmail.com)
  */
 // url dituju
 var url = 'https://lpse.kalteng.go.id/eproc4/lelang'
-// untuk membuat file
-var fs = require('fs')
 // jumlah halaman dibaca
 var pagecnt = 0
 // maksimal halaman,masukkan nilai 0 untuk mengabaikan halaman, pada skenario ini sistem melakukan pembacaan
@@ -48,9 +46,13 @@ function scrapePage()
     waiter.waitFor(
         function() {
             // mulai proses pembacaan dan melakukan evaluasi saat halaman sudah terload
-            return page.evaluate(function () {
-                return $('div#tbllelang_paginate ul.pagination').is(':visible')
-            })
+            return page.evaluate(function (currentpage) {
+                var pagination = $('div#tbllelang_paginate ul.pagination')
+                return (
+                    $(pagination).is(':visible') && 
+                    parseInt($(pagination).find('li.active a').text().trim()) == currentpage
+                    )
+            }, pagecnt)
         },
         function() {
             stopLoop = false // apa looping diteruskan?
@@ -153,7 +155,11 @@ function processingThePage(page, currentPage)
         harapDijalankanKembali = false // harap dijalankan lagi?
 
     // console.log("Mendapatkan data untuk di proses setelah evaluate : " + resultLength)
+    // console.log("Jumlah data tersimpan sebelum hasil evaluate ditambahkan: " +  jsonutil.getLength())
+
     do {
+        var harusnyaAdaPenambahan = 0 // apakah semestinya ada penambahan? dan berapa jumlah penambahan?
+
         // ada kemungkinan terjadi memory leak? Maka ulangi untuk melakukan pembacaan ulang data yang dikembalikan
         // looping berdasarkan data tersebut
         for (var i = 0; i < resultLength; i++) {
@@ -162,10 +168,24 @@ function processingThePage(page, currentPage)
                 idDicari = result[i]['idTender'] + '_' + md5nya,
                 currDate = Date.now() // get timestamps, so it easier to sort!
 
+            // console.log("Ingin dimasukkan: " + idDicari)
             if (jsonutil.isAlreadyInserted(idDicari)) {
-                // console.log("Ingin dimasukkan: " + idDicari + " tidak ada perubahan.")
                 continue
             } else {
+                // check apakah ada idTender yang sama sudah dimasukkan?
+                var idTenderFound = jsonutil.findValueInField(result[i].idTender, 'idTender')
+                if(idTenderFound !== false) {
+                    // terdapat idTender yang sudah pernah dimasukkan, jadi ini adalah data yang baru
+                    // ada perubahan pada status / jadwal tender. Lakukan segera perubahan dengan 
+                    // menghapus data yang ada dan masukkan data barunya kembali!
+                    // console.log("Tender dengan id: " + result[i].idTender + " mendapat update, data diperbaharui!")
+                    jsonutil.deleteDataAtIndex(idTenderFound)
+                } else {
+                    // harus ada penambahan hanya terjadi bila ada data baru, tidak melakukan update terhadap 
+                    // data yang ada.
+                    // console.log("Tender dengan id: " + result[i].idTender + " harusnya ditambahkan!")
+                    harusnyaAdaPenambahan = harusnyaAdaPenambahan + 1
+                }
                 // console.log("New/Update file: " + idDicari)
                 result[i]['id'] = idDicari
                 result[i]['waktu_check'] = currDate
@@ -174,24 +194,30 @@ function processingThePage(page, currentPage)
             }
         }
 
-        currentDataCount = jsonutil.getLength()
-        if (previousDataCount == 0) {
-            previousDataCount = currentDataCount
-        } else {
-            if (previousDataCount == currentDataCount) {
-                diRunLagi = true // set global
-                harapDijalankanKembali = true
-                console.log("Percobaan ke: " + (tryCnt + 1) + " Halaman : " + currentPage)
-                console.log("Ada data tidak dapat ditambahkan ke data utama: " + tableContent)
-            } else {
-                harapDijalankanKembali = false
+        if( harusnyaAdaPenambahan > 0 ) { // bila memang harus ada penambahan?
+            currentDataCount = jsonutil.getLength()
+            if (previousDataCount == 0) {
                 previousDataCount = currentDataCount
+            } else {
+                if (previousDataCount == currentDataCount) { // jumlah data sebelumnya sama & semestinya ada penambahan
+                    diRunLagi = true // set global
+                    harapDijalankanKembali = true
+                    console.log("Percobaan ke: " + (tryCnt + 1) + " Halaman : " + currentPage)
+                    console.log("Ada data tidak dapat ditambahkan ke data utama: " + tableContent)
+                } else {
+                    harapDijalankanKembali = false
+                    previousDataCount = currentDataCount
+                }
             }
-        }
 
-        tryCnt = tryCnt + 1
+            tryCnt = tryCnt + 1
+        }
         // console.log("Saat ini ditambahkan: " + jsonutil.getLength())
     } while ( tryCnt < 2 && harapDijalankanKembali )
+    if( tryCnt > 2 ) {
+        console.log("Ada permasalahan data tidak mau ditambahkan!")
+        phantom.exit()
+    }
 }
 
 function initOurDb()
@@ -199,6 +225,8 @@ function initOurDb()
     console.log("DB init ...")
     jsonutil.setPath(jsondbPath)
     jsonutil.initAndLoad()
+    // tambahkan index untuk pengolahan idTender
+    jsonutil.addIndex('idTender')
 }
 
 function storeOurDb()
