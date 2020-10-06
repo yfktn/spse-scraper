@@ -9,7 +9,7 @@ var config = require('./config'),
     jsonutil = require('./jsonutil'),
     jsonDbPath = config.scraper.dbPath,
     performaStart = performance.now(),
-    spseUrl = config.scraper.url
+    spseUrl = config.scraper.urlTanpaService
 
 function aksesHalamanPengumumanTenderTerdata()
 {
@@ -25,8 +25,12 @@ function aksesHalamanPengumumanTenderTerdata()
         }
     } else {
         linknya = spseUrl + dataCurrent.linkPengumuman // dapatkan link untuk dibuka
+        console.log("Akses:" + linknya)
+        // pagePengumuman.onResourceReceived = function (response) {
+        //     console.log('Receive ' + JSON.stringify(response, undefined, 4));
+        // };
         pagePengumuman.open(linknya, function (status) {
-            if (status == 'success') {
+            if (status === 'success') {
                 waiter.waitFor(
                     function () {
                         // tunggu sampai sesuatu ke load

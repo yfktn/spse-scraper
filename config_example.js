@@ -10,6 +10,8 @@ exports.scraper = {
     urlDaftarLelang: 'https://lpse.url-anda-di-sini.go.id/eproc4/lelang',
     // masukkan link alamat untuk evaluasi di sini, perhatikan tanda "/" ada dibagian akhir
     urlEvaluasi: 'https://lpse.url-anda-di-sini.go.id/eproc4/evaluasi/',
+    // oke ini menunjukkan URL tanpa service eproc4 
+    urlTanpaService: 'https://lpse.url-anda-di-sini.go.id',
     // masukkan path tempat data di buat
     dbPath: 'spse-craper.db',
     // masukkan nilai di sini, berapa halaman maksimal yang dibaca oleh scraper untuk diolah, di mana
