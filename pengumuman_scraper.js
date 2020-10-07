@@ -14,9 +14,8 @@ var config = require('./config'),
 function aksesHalamanPengumumanTenderTerdata()
 {
     dataCurrent = jsonutil.getCurrentData()
-
     if (dataCurrent.visited == 1) {
-        console.log("Akses ke tender: " + dataCurrent.idTender + "  sudah dilakukan")
+        // console.log("Akses ke tender: " + dataCurrent.idTender + "  sudah dilakukan")
 
         if (jsonutil.moveNext()) { // maju ke data berikutnya
             aksesHalamanPengumumanTenderTerdata() // recursive
@@ -39,7 +38,7 @@ function aksesHalamanPengumumanTenderTerdata()
                         })
                     },
                     function () {
-                        console.log("Mengakses : " + linknya)
+                        //console.log("Mengakses : " + linknya)
                         var dataPengumuman = prosesPengumumanTender()
                         jsonutil.mergeObject(dataCurrent, dataPengumuman)
                         dataCurrent.visited = 1 // set nilai visited jangan lupa!
@@ -121,6 +120,7 @@ function main()
     jsonutil.initAndLoad()
     // move to the first data
     jsonutil.moveFirst()
+    console.log("Proses dimulai, mohon tunggu ...")
     aksesHalamanPengumumanTenderTerdata()
 }
 
