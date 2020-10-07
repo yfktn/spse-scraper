@@ -277,3 +277,38 @@ exports.dumpObject = function(obj)
         console.log(key + " = " + value)
     }
 }
+
+/**
+ * Sumber:
+ * https://stackoverflow.com/questions/8847766/how-to-convert-json-to-csv-format-and-store-in-a-variable
+ * @param {string} filePathTo kemana file hasil convert di simpan?
+ */
+exports.dumpObjectToCSV = function(filePathTo)
+{
+    var jsonData = JSON.parse(fs.read(filePath)), 
+        fields = Object.keys(jsonData[0]),
+        replacer = function(key, value) { 
+            return value === null ? 
+                '': 
+                value
+        }, 
+        csv = jsonData.map(function(row) {
+            return fields.map(function(fieldName) {
+                // replace some unwanted char
+                if (row[fieldName] === null || row[fieldName] === undefined) {
+                    v = ''
+                } else if( typeof row[fieldName] === 'string' || row[fieldName] instanceof String) {
+                    v = row[fieldName]
+                        .replace(/"/g, "'") // replace karakter "
+                        .replace(/(\r\n|\n|\r)/gm, "") // replace CRLF|CR|LF
+                        .replace(/\s+/g, " ") // doubled space hilangkan dengan single space
+                } else {
+                    v = row[fieldName]
+                }                    
+                return JSON.stringify(v, replacer)
+            }).join(",")
+        })
+    csv.unshift(fields.join(","))  // masukkan fields 
+    csv = csv.join('\r\n')
+    fs.write(filePathTo, csv, "w")
+}
