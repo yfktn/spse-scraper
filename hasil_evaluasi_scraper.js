@@ -90,9 +90,11 @@ function prosesDataEvaluasi()
             data['ada_pemenang'] = 1
             data['pemenang'] = pemenang[0].trim()
             data['npwp'] = pemenang[1].trim()
-            data['penawaran'] = $(barisPemenang).find('td:eq(' + dexPenawaran + ')').text().replace('Rp ', '')
-            data['terkoreksi'] = $(barisPemenang).find('td:eq(' + dexTerkoreksi + ')').text().replace('Rp ', '')
-            data['negosiasi'] =(dexNegosiasi >= 0 ? $(barisPemenang).find('td:eq(' + dexNegosiasi + ')').text().replace('Rp ', ''): 0)
+            // ambil nilai berdasarkan index tanpa harus melihat apakah tag cell menggunakan td atau th
+            // issu Bug #31
+            data['penawaran'] = $(barisPemenang).children().eq(dexPenawaran).text().replace('Rp ', '')
+            data['terkoreksi'] = $(barisPemenang).children().eq(dexTerkoreksi).text().replace('Rp ', '')
+            data['negosiasi'] = (dexNegosiasi >= 0 ? $(barisPemenang).children().eq(dexNegosiasi).text().replace('Rp ', ''): 0)
             // apakah sudah di buat di pemenang berkontrak?
             // kalau sudah berkontrak ada di barisnya dengan tanda gambar bintang star.gif
             data['sudah_berkontrak'] = $(barisPemenang).find('td:eq(' + dexStatusPK + ') > img[src$="star.gif"]').length
