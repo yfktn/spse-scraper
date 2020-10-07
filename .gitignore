@@ -1,4 +1,5 @@
 *.db
 *.db-*
+*.csv
 testtaffy.js
 config.js
