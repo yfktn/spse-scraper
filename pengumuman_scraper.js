@@ -68,49 +68,34 @@ function prosesPengumumanTender()
         var data = {},
             tableTr = $('div.content:first table tr')
 
-        // data['kode_tender'] = $(tableTr[0]).find('td:first').text()
-        // data['nama_tender'] = $(tableTr[1]).find('td:first').html()
-        // nilai RUP dll
-        var dtu = $(tableTr[4]).find('td'),
-            pagu = $(tableTr[13]).find('td:first').text(),
-            hps = $(tableTr[13]).find('td:last').text()
-
-        data['rup_kode'] = $(dtu[0]).text().trim()
-        data['rup_nama_paket'] = $(dtu[1]).text().trim()
-        data['sumber_dana'] = $(dtu[3]).text().trim()
-        if( data['rup_kode'].length > 0 ) {
-            // bila ini ada RUP sudah?
-            data['tanggal_pembuatan'] = $(tableTr[5]).find('td:first').text().trim()
-            data['keterangan'] = $(tableTr[6]).find('td:first').text().trim()
-            data['instansi'] = $(tableTr[8]).find('td:first').text().trim()
-            data['satuan_kerja'] = $(tableTr[9]).find('td:first').text().trim()
-            data['kategori'] = $(tableTr[10]).find('td:first').text().trim()
-            data['sistem_pengadaan'] = $(tableTr[11]).find('td:first').text().trim()
-            // data['tahun_anggaran'] = $(tableTr[12]).find('td:first').text().trim()
-            data['pagu_paket'] = pagu.replace('Rp ', '')
-            data['hps_paket'] = hps.replace('Rp ', '')
-            data['cara_pembayaran'] = $(tableTr[14]).find('td:first').text().trim()
-            data['lokasi'] = $(tableTr[15]).find('td:first').html()
-            data['kualifikasi'] = $(tableTr[16]).find('td:first').text().trim()
+        // untuk kode rup lebih dahulu
+        ruptable = $(tableTr).find('th:first-child:contains("Rencana Umum Pengadaan")').next()
+        if( ruptable.text().trim().length > 0 ) { // ada yang tidak ada RUP! damn
+            // ambil baris pertama aja dari nilainya
+            rowCellnya = ruptable.find('table tr:nth-child(2) td')
+            data['rup_kode'] = rowCellnya.eq(0).text().trim()
+            data['rup_nama_paket'] = rowCellnya.eq(1).text().trim()
+            data['sumber_dana'] = rowCellnya.eq(2).text().trim()
         } else {
-
-            pagu = $(tableTr[11]).find('td:first').text().trim()
-            hps = $(tableTr[11]).find('td:last').text().trim()
-            // ini bila belum ada RUP
-            data['tanggal_pembuatan'] = $(tableTr[3]).find('td:first').text().trim()
-            data['keterangan'] = $(tableTr[4]).find('td:first').text().trim()
-            data['instansi'] = $(tableTr[6]).find('td:first').text().trim()
-            data['satuan_kerja'] = $(tableTr[7]).find('td:first').text().trim()
-            data['kategori'] = $(tableTr[8]).find('td:first').text().trim()
-            data['sistem_pengadaan'] = $(tableTr[9]).find('td:first').text().trim()
-            // data['tahun_anggaran'] = $(tableTr[12]).find('td:first').text().trim()
-            data['pagu_paket'] = pagu.replace('Rp ', '')
-            data['hps_paket'] = hps.replace('Rp ', '')
-            data['cara_pembayaran'] = $(tableTr[12]).find('td:first').text().trim()
-            data['lokasi'] = $(tableTr[13]).find('td:first').html()
-            data['kualifikasi'] = $(tableTr[14]).find('td:first').text().trim()
+            data['rup_kode'] = 0
+            data['rup_nama_paket'] = 'NOT-FOUND'
+            data['sumber_dana'] = '?'
         }
-        data['peserta'] = $('div.content:first table th:last').next().text().trim()
+
+        // kode rup
+        data['tanggal_pembuatan'] = $(tableTr).find('th:first-child:contains("Tanggal Pembuatan")').next().text().trim()
+        data['keterangan'] = $(tableTr).find('th:first-child:contains("Keterangan")').next().text().trim()
+        data['instansi'] = $(tableTr).find('th:first-child:contains("Instansi")').next().text().trim()
+        data['satuan_kerja'] = $(tableTr).find('th:first-child:contains("Satuan Kerja")').next().text().trim()
+        data['kategori'] = $(tableTr).find('th:first-child:contains("Kategori")').next().text().trim()
+        data['sistem_pengadaan'] = $(tableTr).find('th:first-child:contains("Sistem Pengadaan")').next().text().trim()
+        data['kategori'] = $(tableTr).find('th:first-child:contains("Kategori")').next().text().trim()
+        data['pagu_paket'] = $(tableTr).find('th:first-child:contains("Nilai Pagu Paket")').next().text().trim().replace('Rp ', '')
+        data['hps_paket'] = $(tableTr).find('th:contains("Nilai HPS Paket")').next().text().trim().replace('Rp ', '')
+        data['cara_pembayaran'] = $(tableTr).find('th:contains("Cara Pembayaran")').next().text().trim()
+        data['lokasi'] = $(tableTr).find('th:contains("Lokasi Pekerjaan")').next().html()
+        data['kualifikasi'] = $(tableTr).find('th:contains("Kualifikasi Usaha")').next().text().trim()
+        data['peserta'] = $(tableTr).find('th:first-child:contains("Peserta Tender")').next().text().trim()
 
         return JSON.stringify(data)
     })
