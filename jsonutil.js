@@ -293,7 +293,7 @@ exports.dumpObjectToCSV = function(filePathTo)
                 return JSON.stringify(row[fieldName], replacer)
             }).join(",")
         })
-    csv.unshift(fields.join(",")) 
+    csv.unshift(fields.join(","))  // masukkan fields 
     csv = csv.join('\r\n')
     fs.write(filePathTo, csv, "w")
 }
