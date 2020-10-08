@@ -26,6 +26,11 @@ Dapat data dasarnya kemudian:
 2. Cari tahu siapa pemenangnya dan NPWP
 3. Lakukan penyimpanan supaya nanti bisa ditelusuri ulang untuk optimasi
 
+## Setelah data evaluasi didapatkan
+Mendapatkan data evaluasi dan:
+1. Check bahwa data masih ada
+2. Bila data sudah tidak ada, tandai record `statusbacaketerangan` sebagai telah dibatalkan
+
 ## Cara penggunaan
 Untuk bisa menggunakan aplikasi scraper ini adalah:
 1. Pastikan bahwa **aplikasi phantomjs** telah terinstal, untuk ini silahkan [Download Binary Phantom.js](https://phantomjs.org/download.html). Sesuaikan dengan OS yang digunakan, serta pastikan sudah bisa dieksekusi dari command shell.
@@ -44,13 +49,13 @@ Untuk bisa menggunakan aplikasi scraper ini adalah:
     ```
 6. Jalankan script `lpse_check_paket_masih_ada.js`
     ```
-    $ phantomjs script lpse_check_paket_masih_ada.js
+    $ phantomjs lpse_check_paket_masih_ada.js
     ```
 7. Bila diperlukan, file hasil format JSON di convert ke CSV menggunakan tool `dump_data_to_csv.js`
     ```
     phantomjs dump_data_to_csv.js
     ```
-8. Dari hasil langkah yang tidak boleh ditukar ini, maka akan dihasilkan file data tender pada website SPSE terpilih.
+8. Dari hasil langkah **yang tidak boleh ditukar ini**, maka akan dihasilkan file data tender pada website SPSE terpilih.
 
 ## Hasil Output ##
 
@@ -62,6 +67,6 @@ Versi SPSE yang dikenali adalah SPSE versi 4.3.
 ## Perhatian
 Karena proses pembacaan membuat trafik yang sangat tinggi pada website, diharapkan penggunaan tool ini dilakukan dengan sepengetahuan dan seizin System Admin LPSE.
 
-Ini masih versi sangat awal.
+Ini masih versi sangat awal, gunakan dengan bijak!
 
 *Pekerjaan ini merupakan salah satu bukti pekerjaan Work From Home PNS Pemprov Kalteng :D*
