@@ -30,25 +30,37 @@ Dapat data dasarnya kemudian:
 Untuk bisa menggunakan aplikasi scraper ini adalah:
 1. Pastikan bahwa **aplikasi phantomjs** telah terinstal, untuk ini silahkan [Download Binary Phantom.js](https://phantomjs.org/download.html). Sesuaikan dengan OS yang digunakan, serta pastikan sudah bisa dieksekusi dari command shell.
 2. Lakukan copy terhadap file config_example.js menjadi file config.js dan lakukan penyesuaian.
-3. Jalankan script lpse_scraper.js melalui command shell:
-```
-$ phantomjs lpse_scraper.js
-```
-4. Jalankan script pengumuman_scraper.js melalui command shell:
-```
-$ phantomjs pengumuman_scraper.js
-```
-5. Jalankan script hasil_evaluasi_scraper.js.
-```
-$ phantomjs hasil_evaluasi_scraper.js
-```
-6. Dari hasil langkah yang tidak boleh ditukar ini, maka akan dihasilkan file data tender pada website SPSE terpilih.
+3. Jalankan script `lpse_scraper.js` melalui command shell:
+    ```
+    $ phantomjs lpse_scraper.js
+    ```
+4. Jalankan script `pengumuman_scraper.js` melalui command shell:
+    ```
+    $ phantomjs pengumuman_scraper.js
+    ```
+5. Jalankan script `hasil_evaluasi_scraper.js`.
+    ```
+    $ phantomjs hasil_evaluasi_scraper.js
+    ```
+6. Jalankan script `lpse_check_paket_masih_ada.js`
+    ```
+    $ phantomjs script lpse_check_paket_masih_ada.js
+    ```
+7. Bila diperlukan, file hasil format JSON di convert ke CSV menggunakan tool `dump_data_to_csv.js`
+    ```
+    phantomjs dump_data_to_csv.js
+    ```
+8. Dari hasil langkah yang tidak boleh ditukar ini, maka akan dihasilkan file data tender pada website SPSE terpilih.
+
+## Hasil Output ##
+
+Dari proses yang dijalankan di atas akan dihasilkan satu buah file dengan format JSON. Apabila dilakukan proses konversi data menggunakan `dump_data_to_csv.js`, akan dihasilkan sebuah file dengan format CSV bernama `spse-scraper.csv`.
 
 ## Versi SPSE
 Versi SPSE yang dikenali adalah SPSE versi 4.3.
 
 ## Perhatian
-Karena proses pembacaan membuat trafik yang sangat tinggi pada website, diharapkan agar penggunaan tool ini dilakukan dengan sepengetahuan System Admin LPSE.
+Karena proses pembacaan membuat trafik yang sangat tinggi pada website, diharapkan penggunaan tool ini dilakukan dengan sepengetahuan dan seizin System Admin LPSE.
 
 Ini masih versi sangat awal.
 
